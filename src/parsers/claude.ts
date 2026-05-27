@@ -69,6 +69,7 @@ async function loadAgents(agentsDirs: string[]): Promise<ClaudeAgent[]> {
       model: data.model as string | undefined,
       body: body.trim(),
       sourcePath: file,
+      content: raw,
     })
   }
   return agents
@@ -93,6 +94,7 @@ async function loadCommands(commandsDirs: string[]): Promise<ClaudeCommand[]> {
       disableModelInvocation,
       body: body.trim(),
       sourcePath: file,
+      content: raw,
     })
   }
   return commands

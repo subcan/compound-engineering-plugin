@@ -31,6 +31,7 @@ export type ClaudeAgent = {
   model?: string
   body: string
   sourcePath: string
+  content?: string // Original raw file content (frontmatter + body) when loaded from disk. Useful for high-fidelity targets like dcode.
 }
 
 export type ClaudeCommand = {
@@ -42,6 +43,7 @@ export type ClaudeCommand = {
   disableModelInvocation?: boolean
   body: string
   sourcePath: string
+  content?: string // Original raw file content (frontmatter + body) when loaded from disk.
 }
 
 export type ClaudeSkill = {

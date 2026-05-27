@@ -5,12 +5,14 @@ import { convertClaudeToPi } from "../converters/claude-to-pi"
 import { convertClaudeToGemini } from "../converters/claude-to-gemini"
 import { convertClaudeToKiro } from "../converters/claude-to-kiro"
 import { convertClaudeToGrok } from "../converters/claude-to-grok"
+import { convertClaudeToDcode } from "../converters/claude-to-dcode"
 import { writeOpenCodeBundle } from "./opencode"
 import { writeCodexBundle } from "./codex"
 import { writePiBundle } from "./pi"
 import { writeGeminiBundle } from "./gemini"
 import { writeKiroBundle } from "./kiro"
 import { writeGrokBundle } from "./grok"
+import { writeDcodeBundle } from "./dcode"
 
 export type TargetScope = "global" | "workspace"
 
@@ -88,5 +90,13 @@ export const targets: Record<string, TargetHandler> = {
     implemented: true,
     convert: convertClaudeToGrok as TargetHandler["convert"],
     write: writeGrokBundle as TargetHandler["write"],
+  },
+  dcode: {
+    name: "dcode",
+    // Set to true after full 6-phase completion + shared tests + U3-style exercising (see plan 2026-05-26-001).
+    // Do not leave as true for partial/skeleton implementations in the future.
+    implemented: true,
+    convert: convertClaudeToDcode as TargetHandler["convert"],
+    write: writeDcodeBundle as TargetHandler["write"],
   },
 }

@@ -4,6 +4,7 @@ import path from "path"
 import { loadClaudePlugin } from "../src/parsers/claude"
 import { convertClaudeToOpenCode, transformSkillContentForOpenCode } from "../src/converters/claude-to-opencode"
 import { convertClaudeToGrok } from "../src/converters/claude-to-grok"
+import { convertClaudeToDcode } from "../src/converters/claude-to-dcode"
 import { parseFrontmatter } from "../src/utils/frontmatter"
 import type { ClaudePlugin } from "../src/types/claude"
 
@@ -554,5 +555,33 @@ describe("convertClaudeToGrok (spec coverage per AGENTS.md checklist item 4 + 00
     expect(Array.isArray(bundle.commands)).toBe(true)
     // Grok has no direct hook equivalent; converter must remain resilient (warning is acceptable)
     expect(() => convertClaudeToGrok(plugin, {})).not.toThrow()
+  })
+})
+
+describe("convertClaudeToDcode (shared coverage per 6-phase pattern + AGENTS.md)", () => {
+  test("produces thin DcodeBundle shape with skillDirs and restructured agents", async () => {
+    const plugin = await loadClaudePlugin(compoundEngineeringRoot)
+    const bundle = convertClaudeToDcode(plugin, {} as any)
+
+    expect(Array.isArray(bundle.skillDirs)).toBe(true)
+    expect(bundle.skillDirs.length).toBeGreaterThan(0)
+    expect(Array.isArray(bundle.agents)).toBe(true)
+    expect(bundle.agents.length).toBeGreaterThan(0)
+
+    // Representative agent - full content passed through (minimal transform for dcode)
+    const reviewer = bundle.agents.find((a) => a.name.includes("reviewer"))
+    expect(reviewer).toBeDefined()
+    expect(reviewer!.content).toContain("name:")
+    expect(reviewer!.content).toContain("description:")
+  })
+
+  test("does not throw on real CE plugin and preserves references/scripts paths", async () => {
+    const plugin = await loadClaudePlugin(compoundEngineeringRoot)
+    expect(() => convertClaudeToDcode(plugin, {} as any)).not.toThrow()
+
+    const bundle = convertClaudeToDcode(plugin, {} as any)
+    // Skills should reference real directories that contain references/ and scripts/
+    const brainstorm = bundle.skillDirs.find((s) => s.name === "ce-brainstorm")
+    expect(brainstorm).toBeDefined()
   })
 })

@@ -229,9 +229,22 @@ https://docs.x.ai/build/features/skills-plugins-marketplaces
 
 See `docs/specs/grok.md` for the exact layout, agent frontmatter mapping, `GROK_PLUGIN_ROOT` conventions, and the recommended `read_file` + `spawn_subagent` dispatch pattern for CE agents.
 
+### dcode (LangChain Deep Agents Code)
+
+```bash
+bunx @every-env/compound-plugin install compound-engineering --to dcode --dcode-agent mybot
+# or portable layout
+bun run src/index.ts convert ./plugins/compound-engineering --to dcode --output /tmp/dcode-ce
+```
+
+dcode discovers skills and subagents from well-known directories (`~/.deepagents/<agent>/skills/`, `.deepagents/skills/`, `~/.agents/skills/`, etc.) and per-subagent `agents/<name>/AGENTS.md` folders. The converter emits the exact inner layout (`skills/<name>/SKILL.md` and `agents/<name>/AGENTS.md`) so you can copy or symlink it into the locations dcode will load.
+
+See the generated instructions after conversion and the official docs for precise placement:
+https://docs.langchain.com/oss/python/deepagents/code/memory-and-skills
+
 ### OpenCode, Pi, Gemini, and Kiro
 
-This repo includes a Bun/TypeScript installer that converts the Compound Engineering plugin to OpenCode, Pi, Gemini CLI, Kiro CLI, and Grok.
+This repo includes a Bun/TypeScript installer that converts the Compound Engineering plugin to OpenCode, Pi, Gemini CLI, Kiro CLI, Grok, and dcode (LangChain Deep Agents Code).
 
 ```bash
 bunx @every-env/compound-plugin install compound-engineering --to opencode

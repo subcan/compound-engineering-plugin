@@ -28,7 +28,7 @@ export default defineCommand({
     to: {
       type: "string",
       default: "opencode",
-      description: "Target format (opencode | codex | pi | gemini | kiro | grok | all)",
+      description: "Target format (opencode | codex | pi | gemini | kiro | grok | dcode | all)",
     },
     output: {
       type: "string",
@@ -44,6 +44,11 @@ export default defineCommand({
       type: "string",
       alias: "pi-home",
       description: "Write Pi output to this Pi root (ex: ~/.pi/agent or ./.pi)",
+    },
+    dcodeAgent: {
+      type: "string",
+      alias: "dcode-agent",
+      description: "Agent name for dcode user-level layout (default: agent). Controls ~/.deepagents/<name>/ target.",
     },
     scope: {
       type: "string",
@@ -178,7 +183,14 @@ export default defineCommand({
       })
       const effectiveScope =
         targetName === "opencode" ? resolveOpenCodeWriteScope(hasExplicitOutput, resolvedScope) : resolvedScope
-      await target.write(primaryOutputRoot, bundle, effectiveScope)
+
+      if (targetName === "dcode") {
+        const dcodeAgent = args.dcodeAgent ? String(args.dcodeAgent) : undefined
+        // dcode writer accepts an options object as third argument (agentName for layout)
+        await (target.write as any)(primaryOutputRoot, bundle, { agentName: dcodeAgent })
+      } else {
+        await target.write(primaryOutputRoot, bundle, effectiveScope)
+      }
       console.log(`Installed ${plugin.manifest.name} to ${primaryOutputRoot}`)
 
       const extraTargets = parseExtraTargets(args.also)
@@ -211,7 +223,12 @@ export default defineCommand({
           extra === "opencode"
             ? resolveOpenCodeWriteScope(hasExplicitOutput, handler.defaultScope)
             : handler.defaultScope
-        await handler.write(extraRoot, extraBundle, extraScope)
+        if (extra === "dcode") {
+          const dcodeAgent = args.dcodeAgent ? String(args.dcodeAgent) : undefined
+          await (handler.write as any)(extraRoot, extraBundle, { agentName: dcodeAgent })
+        } else {
+          await handler.write(extraRoot, extraBundle, extraScope)
+        }
         console.log(`Installed ${plugin.manifest.name} to ${extraRoot}`)
       }
 
